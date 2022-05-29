@@ -1,0 +1,6 @@
+selain->palvelin: HTTP POST https://studies.cs.helsinki.fi/exampleapp/new_note_spa
+
+note over selain:
+selain alkaa suorittaa js-koodia
+joka lisää muistiinpanon listaan näytölle ja lähettää JSON-datan palvelimelta
+end note
