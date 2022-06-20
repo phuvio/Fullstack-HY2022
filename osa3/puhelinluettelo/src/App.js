@@ -61,7 +61,7 @@ const App = () => {
     }
   }
 
-  const showUsers = (newFilter !== '')
+  const showUsers = newFilter
     ? persons.filter(person => {
         return person.name.toLowerCase().includes(newFilter)
       })
