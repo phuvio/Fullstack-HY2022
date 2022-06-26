@@ -16,18 +16,6 @@ const App = () => {
   const [success, setSuccess] = useState(null)
   const [error, setError] = useState(null)
 
-  const handleNameChange = (event) => {
-    setNewName(event.target.value)
-  }
-
-  const handleNumberChange = (event) => {
-    setNewNumber(event.target.value)
-  }
-
-  const handleFilterChange = (event) => {
-    setNewFilter(event.target.value)
-  }
-
   useEffect(() => {
     personsService
       .getAll()
@@ -48,7 +36,7 @@ const App = () => {
             setTimeout(() => {
               setSuccess(null)
             }, 5000)
-          } )
+          })
           .catch(error => {
             setError(
               `Information of ${e.name} has already been removed from server`
@@ -61,28 +49,21 @@ const App = () => {
     }
   }
 
-  const showUsers = newFilter
-    ? persons.filter(person => {
-        return person.name.toLowerCase().includes(newFilter)
-      })
+  const showUsers = (newFilter.length !== 0)
+    ? persons.filter(person => 
+        person.name.toLowerCase().includes(newFilter.toLowerCase())
+      )
     : persons
 
   const addName = (event) => {
     event.preventDefault()
-    const isFound = persons.some(element => {
-      if (element.name === newName.trim()) {
-        return true
-      }
-      return false
-    })
-    if (isFound) { 
+    const foundPerson = persons.find(p => p.name === newName.trim())
+    if (foundPerson) { 
       if (window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)) {
-        const person = persons.find(p => p.name === newName.trim())
-        const changedNumber = { ...person, number: newNumber }
         personsService
-          .update(person.id, changedNumber)
+          .update(foundPerson.id, { ...foundPerson, number: newNumber })
             .then(updatedPerson => {
-              setPersons(persons.map(p => p.id !== person.id ? p : updatedPerson))
+              setPersons(persons.map(p => p.id !== foundPerson.id ? p : updatedPerson))
               setSuccess(
                 `${newName.trim()}'s number changed`
               )
@@ -90,15 +71,24 @@ const App = () => {
                 setSuccess(null)
               }, 5000)
             })
-            .catch(error => {
+          .catch(error => {
+            if (!error.response.data) {
               setError(
-                `Information of ${person.name} has already been removed from server`
+                `Information of ${foundPerson.name} has already been removed from server`
               )
-              setTimeout(() => {
-                setError(null)
-              }, 5000)
-              setPersons(persons.filter(p => p.name !== person.name))
-            })
+              setPersons(persons.filter(p => p.name !== foundPerson.name))
+            } else if (error.response.data.error.startsWith('Validation')) {
+              setError(error.response.data.error)
+            } else {
+              setError(
+                `Information of ${foundPerson.name} has already been removed from server`
+              )
+              setPersons(persons.filter(p => p.name !== foundPerson.name))
+            }
+            setTimeout(() => {
+              setError(null)
+            }, 5000)
+          })
       }
     } else {
       const personObject = {
@@ -115,6 +105,13 @@ const App = () => {
           setTimeout(() => {
             setSuccess(null)
           }, 5000)
+          setNewName('')
+        })
+        .catch(error => {
+          setError(error.response.data.error)
+          setTimeout(() => {
+            setError(null)
+          }, 5000)
         })
     }
     setNewName('')
@@ -130,16 +127,16 @@ const App = () => {
 
       <Filter 
         newFilter={newFilter} 
-        handleFilterChange={handleFilterChange} 
+        handleFilterChange={({ target }) => setNewFilter(target.value)} 
       />
 
       <h3>Add a new</h3>
 
       <PersonForm 
         newName={newName} 
-        handleNameChange={handleNameChange} 
+        handleNameChange={({ target }) => setNewName(target.value)} 
         newNumber={newNumber} 
-        handleNumberChange={handleNumberChange} 
+        handleNumberChange={({ target }) => setNewNumber(target.value)} 
         addName={addName} 
       />
 
