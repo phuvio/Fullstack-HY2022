@@ -1,0 +1,11 @@
+POST http://localhost:3003/api/blogs
+Content-Type: application/json
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVra2VsaSIsImlkIjoiNjJkMDA0YzQwODg1ZjdhNDk0MTQ3YjQ3IiwiaWF0IjoxNjU3ODkxNjIwLCJleHAiOjE2NTc4OTUyMjB9._XO_bsuECs_F76e9Q6Ri1tDpFinQGX42dkXv9jmDLOY
+
+{
+    "title": "Niitä näitä",
+    "author": "Itse Kirjailija",
+    "url": "http://toinenblogi.fi",
+    "likes": 1,
+    "user": "62d004c40885f7a494147b47"
+}
